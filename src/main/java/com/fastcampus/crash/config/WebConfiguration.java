@@ -1,5 +1,6 @@
 package com.fastcampus.crash.config;
 
+import com.fastcampus.crash.model.user.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +44,11 @@ public class WebConfiguration {
                 requests
                     .requestMatchers(HttpMethod.POST, "/api/*/users", "/api/*/users/authenticate")
                     .permitAll()
+                    .requestMatchers(
+                        HttpMethod.GET, "/api/*/session-speakers", "/api/*/session-speakers/**")
+                    .permitAll()
+                    .requestMatchers("/api/*/session-speakers", "/api/*/session-speakers/**")
+                    .hasAuthority(Role.ADMIN.name())
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
