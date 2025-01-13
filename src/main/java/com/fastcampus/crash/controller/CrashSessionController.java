@@ -3,15 +3,19 @@ package com.fastcampus.crash.controller;
 import com.fastcampus.crash.model.crashsession.CrashSession;
 import com.fastcampus.crash.model.crashsession.CrashSessionPatchRequestBody;
 import com.fastcampus.crash.model.crashsession.CrashSessionPostRequestBody;
+import com.fastcampus.crash.model.crashsession.CrashSessionRegistrationStatus;
+import com.fastcampus.crash.model.entity.UserEntity;
 import com.fastcampus.crash.model.sessionspeaker.SessionSpeaker;
 import com.fastcampus.crash.model.sessionspeaker.SessionSpeakerPatchRequestBody;
 import com.fastcampus.crash.model.sessionspeaker.SessionSpeakerPostRequestBody;
 import com.fastcampus.crash.service.CrashSessionService;
+import com.fastcampus.crash.service.RegistrationService;
 import com.fastcampus.crash.service.SessionSpeakerService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class CrashSessionController {
 
   @Autowired private CrashSessionService crashSessionService;
+  @Autowired private RegistrationService registrationService;
 
   @GetMapping
   public ResponseEntity<List<CrashSession>> getCrashSessions() {
@@ -27,9 +32,19 @@ public class CrashSessionController {
   }
 
   @GetMapping("/{sessionId}")
-  public ResponseEntity<CrashSession> getCrashSessionBySpeakerId(@PathVariable Long sessionId) {
+  public ResponseEntity<CrashSession> getCrashSessionBySessionId(@PathVariable Long sessionId) {
     var crashSession = crashSessionService.getCrashSessionBySessionId(sessionId);
     return ResponseEntity.ok(crashSession);
+  }
+
+  @GetMapping("/{sessionId}/registration-status")
+  public ResponseEntity<CrashSessionRegistrationStatus>
+      getCrashSessionRegistrationStatusBySessionId(
+          @PathVariable Long sessionId, Authentication authentication) {
+    var registrationStatus =
+        registrationService.getCrashSessionRegistrationStatusBySessionIdAndCurrentUser(
+            sessionId, (UserEntity) authentication.getPrincipal());
+    return ResponseEntity.ok(registrationStatus);
   }
 
   @PostMapping
@@ -44,7 +59,8 @@ public class CrashSessionController {
   public ResponseEntity<CrashSession> updateCrashSession(
       @PathVariable Long sessionId,
       @RequestBody CrashSessionPatchRequestBody crashSessionPatchRequestBody) {
-    var crashSession = crashSessionService.updateCrashSession(sessionId, crashSessionPatchRequestBody);
+    var crashSession =
+        crashSessionService.updateCrashSession(sessionId, crashSessionPatchRequestBody);
     return ResponseEntity.ok(crashSession);
   }
 

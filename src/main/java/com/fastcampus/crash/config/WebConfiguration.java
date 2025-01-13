@@ -45,9 +45,17 @@ public class WebConfiguration {
                     .requestMatchers(HttpMethod.POST, "/api/*/users", "/api/*/users/authenticate")
                     .permitAll()
                     .requestMatchers(
-                        HttpMethod.GET, "/api/*/session-speakers", "/api/*/session-speakers/**")
+                        HttpMethod.GET,
+                        "/api/*/session-speakers",
+                        "/api/*/session-speakers/**",
+                        "/api/*/crash-sessions",
+                        "/api/*/crash-sessions/**")
                     .permitAll()
-                    .requestMatchers("/api/*/session-speakers", "/api/*/session-speakers/**")
+                    .requestMatchers(
+                        "/api/*/session-speakers",
+                        "/api/*/session-speakers/**",
+                        "/api/*/crash-sessions",
+                        "/api/*/crash-sessions/**")
                     .hasAuthority(Role.ADMIN.name())
                     .anyRequest()
                     .authenticated())
